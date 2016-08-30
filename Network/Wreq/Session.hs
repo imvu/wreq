@@ -43,7 +43,7 @@
 module Network.Wreq.Session
     (
     -- * Session creation
-      Session
+      Session (seshCookies)
     , newSession
     , newAPISession
     -- ** More control-oriented session creation
