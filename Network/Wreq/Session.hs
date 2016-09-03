@@ -56,6 +56,7 @@ module Network.Wreq.Session
     , options
     , put
     , delete
+    , customPayloadMethod
     -- ** Configurable verbs
     , getWith
     , postWith
@@ -63,6 +64,7 @@ module Network.Wreq.Session
     , optionsWith
     , putWith
     , deleteWith
+    , customPayloadMethodWith
     -- * Extending a session
     , Lens.seshRun
     ) where
@@ -78,6 +80,7 @@ import Prelude hiding (head)
 import qualified Data.ByteString.Lazy as L
 import qualified Network.HTTP.Client as HTTP
 import qualified Network.Wreq.Internal.Lens as Lens
+import qualified Network.HTTP.Types as HTTP
 
 -- | Create a 'Session', passing it to the given function.  The
 -- 'Session' will no longer be valid after that function returns.
@@ -164,6 +167,24 @@ putWith opts sesh url payload = run string sesh =<< preparePut opts url payload
 -- | 'Session'-specific version of 'Network.Wreq.deleteWith'.
 deleteWith :: Options -> Session -> String -> IO (Response L.ByteString)
 deleteWith opts sesh url = run string sesh =<< prepareDelete opts url
+
+customPayloadMethod :: Postable a 
+                    => Session 
+                    -> HTTP.Method 
+                    -> String 
+                    -> a 
+                    -> IO (Response L.ByteString)
+customPayloadMethod = customPayloadMethodWith defaults
+
+customPayloadMethodWith :: Postable a
+                        => Options
+                        -> Session
+                        -> HTTP.Method
+                        -> String
+                        -> a 
+                        -> IO (Response L.ByteString)
+customPayloadMethodWith opts sesh verb url payload = 
+  run string sesh =<< preparePayloadMethod verb opts url payload
 
 runWith :: Session -> Run Body -> Run Body
 runWith Session{..} act (Req _ req) = do
