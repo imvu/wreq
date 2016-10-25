@@ -161,8 +161,7 @@ data Options = Options {
 
 -- | A function that checks the result of a HTTP request and
 -- potentially returns an exception.
-type StatusChecker = Status -> ResponseHeaders -> CookieJar
-                   -> Maybe SomeException
+type StatusChecker = Request -> Response HTTP.BodyReader -> IO ()
 
 -- | Supported authentication types.
 --

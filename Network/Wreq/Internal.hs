@@ -42,7 +42,7 @@ import qualified Network.HTTP.Types as HTTP
 import qualified Network.Wreq.Internal.Lens as Lens
 import qualified Network.Wreq.Internal.AWS as AWS (signRequest)
 import qualified Network.Wreq.Internal.OAuth1 as OAuth1 (signRequest)
-import qualified Network.Wreq.Lens as Lens hiding (checkStatus)
+import qualified Network.Wreq.Lens as Lens hiding (checkResponse)
 
 -- This mess allows this module to continue to load during interactive
 -- development in ghci :-(
@@ -112,7 +112,7 @@ prepare modify opts url = do
                    & setQuery opts
                    & setAuth opts
                    & setProxy opts
-                   & setCheckStatus opts
+                   & setCheckResponse opts
                    & setRedirects opts
                    & Lens.cookieJar .~ cookies opts
     signRequest :: Request -> IO Request
@@ -146,9 +146,9 @@ setProxy :: Options -> Request -> Request
 setProxy = maybe id f . proxy
   where f (Proxy host port) = addProxy host port
 
-setCheckStatus :: Options -> Request -> Request
-setCheckStatus = maybe id f . checkStatus
-  where f cs = ( & Lens.checkStatus .~ cs)
+setCheckResponse :: Options -> Request -> Request
+setCheckResponse = maybe id f . checkStatus
+  where f cs = ( & Lens.checkResponse .~ cs)
 
 prepareGet :: Options -> String -> IO Req
 prepareGet opts url = Req (manager opts) <$> prepare return opts url
